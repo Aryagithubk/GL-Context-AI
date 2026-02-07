@@ -1,0 +1,30 @@
+app:
+  name: "KnowledgeHub AI"
+  top_k: 3
+
+paths:
+  dataset_dir: "./data"
+  vector_store_dir: "./vector_store"
+
+embedding:
+  provider: "ollama"
+  model: "nomic-embed-text" # Small, fast, accurate embedding model
+
+llm:
+  provider: "ollama"
+  model: "llama3.2:1b"       # Using 1B model because of 2GB RAM constraint. 3B would crash.
+  temperature: 0.1           # Low temp for factual answers
+  max_tokens: 512
+
+vector_db:
+  type: "chroma"
+  collection_name: "company_knowledge"
+  persist_directory: "./vector_store"
+
+chunking:
+  chunk_size: 500
+  chunk_overlap: 50
+
+server:
+  host: "0.0.0.0"
+  port: 8000
