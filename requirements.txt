@@ -1,12 +1,19 @@
-fastapi
-uvicorn
-chromadb
-langchain
-langchain-community
-langchain-text-splitters
-langchain-ollama
-pypdf
-python-multipart
-pyyaml
-requests
-langchain-chroma
+fastapi>=0.111.0
+uvicorn[standard]>=0.30.0
+pydantic>=2.7.0
+langchain>=0.2.0
+langchain-core>=0.2.0
+langchain-community>=0.2.0
+langchain-ollama>=0.1.0
+langchain-chroma>=0.1.0
+langchain-openai>=0.1.0
+langchain-google-genai>=1.0.0
+langchain-anthropic>=0.1.0
+chromadb>=0.5.0
+pypdf>=4.2.0
+python-multipart>=0.0.9
+pyyaml>=6.0.0
+requests>=2.31.0
+duckduckgo-search>=6.0.0 # Pinning to avoid breaking changes if possible
+googlesearch-python # Backup
+typing-extensions>=4.11.0 # Sometimes causes issues if old

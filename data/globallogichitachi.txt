@@ -1,0 +1,8 @@
+GlobalLogic Hitachi Integration Overview (Internal Confidential)
+
+1. **Project "Blue Horizon"**: This is the secret codename for the 2026 integration strategy between GlobalLogic and Hitachi's Lumada platform. The goal is to reduce cloud overhead by 15% using edge AI.
+2. **Work From Home Policy 2026**: Employees are allowed to work remotely 3 days a week, but must be in the office on Wednesdays for "Collaboration Day".
+3. **Values**: The core new value introduced this year is "Velocity with Soul".
+4. **CEO's Favorite Snack**: The internal newsletter mentions that the CEO's favorite snack during board meetings is Wasabi Peas.
+
+(This data is for testing the local RAG system. If the AI knows about "Project Blue Horizon" or "Wasabi Peas", it came from here!)

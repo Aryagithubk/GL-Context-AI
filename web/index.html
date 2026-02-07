@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,9 +10,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
+
 <body>
     <div class="background-glow"></div>
-    
+
     <div class="container">
         <header>
             <div class="logo">
@@ -23,7 +25,7 @@
         <main id="chat-container">
             <div class="welcome-message">
                 <h2>Hello! 👋</h2>
-                <p>I'm your corporate knowledge assistant. How can I help you today?</p>
+                <p id="dynamic-greeting">I'm your corporate knowledge assistant. Loading context...</p>
                 <div class="suggestions">
                     <button class="suggestion-chip">What is the remote work policy?</button>
                     <button class="suggestion-chip">How do I submit expenses?</button>
@@ -39,18 +41,23 @@
                     <input type="text" id="query-input" placeholder="Ask a question..." autocomplete="off">
                     <button type="submit" id="send-btn">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                            <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                     </button>
                 </div>
             </form>
             <div class="loader" id="loader">
-                <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
             </div>
         </div>
     </div>
 
     <script src="/static/js/app.js"></script>
 </body>
+
 </html>

@@ -29,7 +29,7 @@ async function submitQuery() {
     input.disabled = true;
     sendBtn.disabled = true;
     loader.style.display = 'flex';
-    
+
     // Scroll to bottom
     scrollToBottom();
 
@@ -47,7 +47,7 @@ async function submitQuery() {
         }
 
         const data = await response.json();
-        appendMessage(data.answer, 'bot', data.sources);
+        appendMessage(data.answer, 'bot', data.sources, data.source_type);
 
     } catch (error) {
         console.error('Error:', error);
@@ -61,7 +61,23 @@ async function submitQuery() {
     }
 }
 
-function appendMessage(text, sender, sources = []) {
+// On Load: Fetch Context
+window.addEventListener('load', async () => {
+    try {
+        const response = await fetch('/context');
+        const data = await response.json();
+        const greetingElement = document.getElementById('dynamic-greeting');
+        if (data.summary) {
+            greetingElement.innerText = `I can help you with: ${data.summary}`;
+        } else {
+            greetingElement.innerText = "I'm your corporate knowledge assistant. How can I help you today?";
+        }
+    } catch (error) {
+        console.error("Failed to load context:", error);
+    }
+});
+
+function appendMessage(text, sender, sources = [], sourceType = 'db') {
     const msgDiv = document.createElement('div');
     msgDiv.classList.add('message', sender);
 
@@ -71,26 +87,34 @@ function appendMessage(text, sender, sources = []) {
 
     const contentDiv = document.createElement('div');
     contentDiv.classList.add('message-content');
-    
-    // Parse markdown-like bolding for simple display (optional enhancement)
-    // For now, just plain text with line breaks
+
+    // Parse markdown-like bolding for simple display
     const formattedText = text.replace(/\n/g, '<br>');
     contentDiv.innerHTML = formattedText;
 
     if (sources && sources.length > 0) {
         const sourcesDiv = document.createElement('div');
         sourcesDiv.classList.add('sources');
-        sourcesDiv.innerHTML = 'Sources: ' + sources.map(s => {
-            // Clean up source path to show just filename
-            const filename = s.split('\\').pop().split('/').pop(); 
+
+        // Add Source Badge (DB vs Web)
+        const badgeClass = sourceType === 'web' ? 'badge-web' : 'badge-db';
+        const badgeLabel = sourceType === 'web' ? '🌐 Web Search' : '📂 Knowledge Base';
+
+        let sourcesHtml = `<span class="source-badge ${badgeClass}">${badgeLabel}</span> `;
+
+        sourcesHtml += sources.map(s => {
+            if (s === "Web Search") return "";
+            const filename = s.split('\\').pop().split('/').pop();
             return `<span class="source-tag">📄 ${filename}</span>`;
         }).join('');
+
+        sourcesDiv.innerHTML = sourcesHtml;
         contentDiv.appendChild(sourcesDiv);
     }
 
     msgDiv.appendChild(avatar);
     msgDiv.appendChild(contentDiv);
-    
+
     chatContainer.appendChild(msgDiv);
 }
 

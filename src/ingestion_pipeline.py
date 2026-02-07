@@ -29,10 +29,18 @@ def run_pipeline():
     )
     embedder = Embedder(model_name=config['embedding']['model'])
     
+    # Use absolute path for vector store to avoid mismatches
+    vector_db_path = os.path.abspath(config['vector_db']['persist_directory'])
+    logger.info(f"Vector DB Path (absolute): {vector_db_path}")
+    
     vector_store = VectorStore(
-        persist_directory=config['vector_db']['persist_directory'],
+        persist_directory=vector_db_path,
         embedding_function=embedder.get_embedding_function()
     )
+
+    # Clear existing data for fresh start
+    logger.info("Clearing existing Vector DB...")
+    vector_store.clear()
 
     logger.info("Loading Documents...")
     docs = loader.load_documents()
@@ -43,7 +51,11 @@ def run_pipeline():
     logger.info("Chunking Documents...")
     chunks = chunker.split_documents(docs)
 
-    logger.info("Storing in Vector DB...")
+    if not chunks:
+        logger.warning("No chunks created. Documents might be empty.")
+        return
+    
+    logger.info(f"Storing {len(chunks)} chunks in Vector DB...")
     vector_store.add_documents(chunks)
 
     logger.info("Ingestion Pipeline Completed Successfully! 🚀")
