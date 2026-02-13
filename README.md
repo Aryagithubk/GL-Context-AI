@@ -1,4 +1,4 @@
-# KnowledgeHub AI
+# OmniQuery AI
 
 A local, privacy-focused RAG system for querying company documents.
 
