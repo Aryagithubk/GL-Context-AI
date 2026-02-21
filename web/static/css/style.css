@@ -75,7 +75,8 @@ header {
 main {
     flex: 1;
     overflow-y: auto;
-    padding: 0px 10px 100px 10px; /* Bottom padding for input area */
+    padding: 0px 10px 100px 10px;
+    /* Bottom padding for input area */
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
@@ -193,6 +194,85 @@ main::-webkit-scrollbar-thumb {
     border-bottom-left-radius: 0.25rem;
 }
 
+/* Agents Used Row */
+.agents-used {
+    margin-top: 0.6rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+}
+
+.agent-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+
+/* Agent type colors */
+.agent-doc {
+    background: rgba(99, 102, 241, 0.15);
+    color: #818cf8;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+}
+
+.agent-db {
+    background: rgba(245, 158, 11, 0.15);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.agent-confluence {
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.agent-web {
+    background: rgba(20, 184, 166, 0.15);
+    color: #2dd4bf;
+    border: 1px solid rgba(45, 212, 191, 0.3);
+}
+
+.agent-fallback {
+    background: rgba(156, 163, 175, 0.15);
+    color: #9ca3af;
+    border: 1px solid rgba(156, 163, 175, 0.3);
+}
+
+/* Confidence badges */
+.confidence-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 500;
+}
+
+.confidence-high {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.confidence-med {
+    background: rgba(234, 179, 8, 0.15);
+    color: #facc15;
+    border: 1px solid rgba(234, 179, 8, 0.3);
+}
+
+.confidence-low {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
 /* Sources */
 .sources {
     margin-top: 0.75rem;
@@ -208,6 +288,34 @@ main::-webkit-scrollbar-thumb {
     padding: 2px 6px;
     border-radius: 4px;
     margin-right: 5px;
+    margin-bottom: 4px;
+}
+
+/* Source type colors */
+.source-doc {
+    background: rgba(99, 102, 241, 0.1);
+    color: #a5b4fc;
+}
+
+.source-db {
+    background: rgba(245, 158, 11, 0.1);
+    color: #fcd34d;
+}
+
+.source-confluence {
+    background: rgba(59, 130, 246, 0.1);
+    color: #93c5fd;
+}
+
+.source-web {
+    background: rgba(20, 184, 166, 0.15);
+    color: #2dd4bf;
+    border: 1px solid rgba(45, 212, 191, 0.3);
+}
+
+.source-general {
+    background: rgba(156, 163, 175, 0.1);
+    color: #d1d5db;
 }
 
 /* Input Area */
@@ -274,7 +382,8 @@ button[type="submit"]:disabled {
 
 /* Loader */
 .loader {
-    display: none; /* Flex when active */
+    display: none;
+    /* Flex when active */
     justify-content: center;
     gap: 6px;
     margin-top: 10px;
@@ -288,15 +397,35 @@ button[type="submit"]:disabled {
     animation: bounce 1.4s infinite ease-in-out both;
 }
 
-.dot:nth-child(1) { animation-delay: -0.32s; }
-.dot:nth-child(2) { animation-delay: -0.16s; }
+.dot:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.dot:nth-child(2) {
+    animation-delay: -0.16s;
+}
 
 @keyframes bounce {
-    0%, 80%, 100% { transform: scale(0); }
-    40% { transform: scale(1); }
+
+    0%,
+    80%,
+    100% {
+        transform: scale(0);
+    }
+
+    40% {
+        transform: scale(1);
+    }
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

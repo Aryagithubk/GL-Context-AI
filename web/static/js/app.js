@@ -2,98 +2,182 @@ const form = document.getElementById('query-form');
 const input = document.getElementById('query-input');
 const chatContainer = document.getElementById('chat-container');
 const loader = document.getElementById('loader');
-const sendBtn = document.getElementById('send-btn');
-const welcomeMessage = document.querySelector('.welcome-message');
 
-// Handle Suggestion Chips
+// Suggestion chips
 document.querySelectorAll('.suggestion-chip').forEach(chip => {
     chip.addEventListener('click', () => {
-        input.value = chip.innerText;
-        submitQuery();
+        input.value = chip.textContent;
+        form.dispatchEvent(new Event('submit'));
     });
 });
 
-form.addEventListener('submit', (e) => {
+form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    submitQuery();
-});
-
-async function submitQuery() {
     const query = input.value.trim();
     if (!query) return;
 
-    // UI Updates
-    if (welcomeMessage) welcomeMessage.style.display = 'none';
+    // Remove welcome message
+    const welcome = document.querySelector('.welcome-message');
+    if (welcome) welcome.remove();
+
+    // Show user message
     appendMessage(query, 'user');
     input.value = '';
-    input.disabled = true;
-    sendBtn.disabled = true;
     loader.style.display = 'flex';
-    
-    // Scroll to bottom
-    scrollToBottom();
 
     try {
-        const response = await fetch('/query', {
+        const res = await fetch('/api/v1/query', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ query: query }),
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query })
         });
 
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-
-        const data = await response.json();
-        appendMessage(data.answer, 'bot', data.sources);
-
-    } catch (error) {
-        console.error('Error:', error);
-        appendMessage("Sorry, I couldn't reach the server. Please ensure the backend is running.", 'bot');
+        const data = await res.json();
+        appendMessage(
+            data.answer,
+            'bot',
+            data.sources || [],
+            data.agents_used || [],
+            data.confidence || 0
+        );
+    } catch (err) {
+        console.error('Query error:', err);
+        appendMessage('⚠️ Sorry, I couldn\'t reach the server. Please ensure the backend is running on port 8000.', 'bot');
     } finally {
-        input.disabled = false;
-        sendBtn.disabled = false;
         loader.style.display = 'none';
-        input.focus();
-        scrollToBottom();
     }
-}
+});
 
-function appendMessage(text, sender, sources = []) {
+function appendMessage(text, sender, sources = [], agentsUsed = [], confidence = 0) {
     const msgDiv = document.createElement('div');
     msgDiv.classList.add('message', sender);
 
     const avatar = document.createElement('div');
     avatar.classList.add('avatar');
-    avatar.innerText = sender === 'user' ? '👤' : '✨';
+    avatar.textContent = sender === 'user' ? '👤' : '✨';
 
     const contentDiv = document.createElement('div');
     contentDiv.classList.add('message-content');
-    
-    // Parse markdown-like bolding for simple display (optional enhancement)
-    // For now, just plain text with line breaks
-    const formattedText = text.replace(/\n/g, '<br>');
-    contentDiv.innerHTML = formattedText;
 
-    if (sources && sources.length > 0) {
-        const sourcesDiv = document.createElement('div');
-        sourcesDiv.classList.add('sources');
-        sourcesDiv.innerHTML = 'Sources: ' + sources.map(s => {
-            // Clean up source path to show just filename
-            const filename = s.split('\\').pop().split('/').pop(); 
-            return `<span class="source-tag">📄 ${filename}</span>`;
-        }).join('');
-        contentDiv.appendChild(sourcesDiv);
+    const textDiv = document.createElement('div');
+    textDiv.classList.add('text');
+    textDiv.innerHTML = formatText(text);
+    contentDiv.appendChild(textDiv);
+
+    if (sender === 'bot') {
+        // ── Agent badges ──
+        if (agentsUsed.length > 0) {
+            const agentsDiv = document.createElement('div');
+            agentsDiv.classList.add('agents-used');
+            agentsDiv.innerHTML = agentsUsed.map(agent => {
+                const icon = getAgentIcon(agent);
+                const cls = getAgentClass(agent);
+                return `<span class="agent-badge ${cls}">${icon} ${agent}</span>`;
+            }).join('');
+
+            // Confidence indicator
+            if (confidence > 0) {
+                const pct = Math.round(confidence * 100);
+                const level = confidence >= 0.7 ? 'high' : confidence >= 0.4 ? 'med' : 'low';
+                agentsDiv.innerHTML += `<span class="confidence-badge confidence-${level}">${pct}% confidence</span>`;
+            }
+
+            contentDiv.appendChild(agentsDiv);
+        }
+
+        // ── Source citations ──
+        if (sources.length > 0) {
+            const sourcesDiv = document.createElement('div');
+            sourcesDiv.classList.add('sources');
+            sourcesDiv.innerHTML = 'Sources: ' + sources.map(s => {
+                const icon = getSourceIcon(s.source_type);
+                const name = getSourceName(s);
+                const cls = getSourceClass(s.source_type);
+                return `<span class="source-tag ${cls}">${icon} ${name}</span>`;
+            }).join('');
+            contentDiv.appendChild(sourcesDiv);
+        }
     }
 
     msgDiv.appendChild(avatar);
     msgDiv.appendChild(contentDiv);
-    
     chatContainer.appendChild(msgDiv);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
 }
 
-function scrollToBottom() {
-    chatContainer.scrollTop = chatContainer.scrollHeight;
+function getAgentIcon(agent) {
+    const icons = {
+        'DocAgent': '📄',
+        'DBAgent': '🗄️',
+        'ConfluenceAgent': '📖',
+        'WebSearchAgent': '🌐',
+        'Fallback': 'ℹ️',
+    };
+    return icons[agent] || '🤖';
+}
+
+function getAgentClass(agent) {
+    const classes = {
+        'DocAgent': 'agent-doc',
+        'DBAgent': 'agent-db',
+        'ConfluenceAgent': 'agent-confluence',
+        'WebSearchAgent': 'agent-web',
+        'Fallback': 'agent-fallback',
+    };
+    return classes[agent] || '';
+}
+
+function getSourceIcon(type) {
+    const icons = {
+        'document': '📄',
+        'database': '🗄️',
+        'confluence': '📖',
+        'web': '🌐',
+        'general_knowledge': 'ℹ️',
+    };
+    return icons[type] || '📎';
+}
+
+function getSourceClass(type) {
+    const classes = {
+        'document': 'source-doc',
+        'database': 'source-db',
+        'confluence': 'source-confluence',
+        'web': 'source-web',
+        'general_knowledge': 'source-general',
+    };
+    return classes[type] || '';
+}
+
+function getSourceName(source) {
+    if (source.source_type === 'document') {
+        const path = source.source_identifier || 'Unknown';
+        return path.split('\\').pop().split('/').pop();
+    }
+    if (source.source_type === 'database') {
+        return source.excerpt || 'Database Query';
+    }
+    if (source.source_type === 'web') {
+        try {
+            return new URL(source.source_identifier).hostname;
+        } catch {
+            return 'Web Source';
+        }
+    }
+    if (source.source_type === 'confluence') {
+        return 'Confluence Page';
+    }
+    return source.source_identifier || 'Unknown';
+}
+
+function formatText(text) {
+    if (!text) return '';
+    return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\n/g, '<br>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em>$1</em>')
+        .replace(/`(.*?)`/g, '<code>$1</code>');
 }
